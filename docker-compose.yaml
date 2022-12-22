@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:15.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      - '5433:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  api:
+    depends_on:
+      - db
+    build: .
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      ADDR: 0.0.0.0:3000
+      ENV: development
+      DB_DSN: postgresql://app:app@db/app?sslmode=disable
+      DB_AUTO_MIGRATE: true
+
+volumes:
+  db: { }
